@@ -1,11 +1,14 @@
-import "../styles/globals.scss";
 import { wrapper } from "src/store";
-import { ChakraProvider } from "@chakra-ui/react";
+import "../styles/globals.scss";
+import Navbar from "src/components/Navbar";
 function MyApp({ Component, pageProps }) {
   return (
-    <ChakraProvider>
-      <Component {...pageProps} />
-    </ChakraProvider>
+    <>
+      <Navbar />
+      <div className="container mx-auto px-4 my-10">
+        <Component {...pageProps} />
+      </div>
+    </>
   );
 }
 
