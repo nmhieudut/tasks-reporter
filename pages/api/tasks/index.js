@@ -24,8 +24,7 @@ export default async function handler(req, res) {
           getYear(date).toString() === year.toString()
         );
       });
-      const months = allTasks.map((t) => format(new Date(t.date), "MM/yyyy"));
-      res.json({ status: 200, data: filteredData, months });
+      res.json({ status: 200, data: filteredData });
       break;
   }
 }

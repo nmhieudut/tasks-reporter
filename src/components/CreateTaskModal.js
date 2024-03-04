@@ -1,7 +1,7 @@
 import React from "react";
 
 export default function CreateTaskModal({ data, handleChangeForm, onCreate }) {
-  const { date, hours, rate, description } = data;
+  const { project, date, hours, rate, description } = data;
   return (
     <dialog id="my_modal_3" className="modal">
       <div className="modal-box">
@@ -12,6 +12,18 @@ export default function CreateTaskModal({ data, handleChangeForm, onCreate }) {
         </form>
         <h3 className="font-bold text-lg">Create new report!</h3>
         <div className="flex flex-col gap-4 my-4">
+          <label className="form-control w-full max-w-xs">
+            <div className="label">
+              <span className="label-text">Project name?</span>
+            </div>
+            <input
+              name="project"
+              value={project}
+              onChange={handleChangeForm}
+              placeholder="Type project name"
+              className="input input-bordered w-full max-w-xs"
+            />
+          </label>
           <label className="form-control w-full max-w-xs">
             <div className="label">
               <span className="label-text">Date</span>

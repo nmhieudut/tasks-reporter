@@ -16,7 +16,12 @@ import {
   getMonths,
 } from "src/services/tasks";
 
+const today = new Date();
+const thisMonth = getMonth(today) + 1;
+const thisYear = getYear(today);
+
 const initialValue = {
+  project: "Susu",
   date: format(new Date(), "yyyy-MM-dd"),
   hours: 0,
   rate: 8,
@@ -33,8 +38,8 @@ export default function Tasks({ data, totalAmount, months }) {
   const [updateBody, setUpdateBody] = useState();
   const searchParams = useSearchParams();
 
-  const month = searchParams.get("month");
-  const year = searchParams.get("year");
+  const month = searchParams.get("month") || thisMonth;
+  const year = searchParams.get("year") || thisYear;
 
   const [selectingTab, setSelectingTab] = useState({
     month,
@@ -102,6 +107,7 @@ export default function Tasks({ data, totalAmount, months }) {
 
   const updateOne = async () => {
     await updateTask(updateBody._id, {
+      project: updateBody.project,
       date: updateBody.date,
       hours: updateBody.hours,
       rate: updateBody.rate,
@@ -112,8 +118,10 @@ export default function Tasks({ data, totalAmount, months }) {
   };
 
   const handleGetAmount = async () => {
-    const res = await getCurrencyRate("USD", "VND");
-    setConvertedAmount(numeral(res * amount).format("0,0"));
+    const currency = await getCurrencyRate();
+    let fromRate = currency.rates["USD"];
+    let toRate = currency.rates["VND"];
+    setConvertedAmount(numeral((toRate / fromRate) * amount).format("0,00.00"));
   };
 
   useEffect(() => {
@@ -121,7 +129,9 @@ export default function Tasks({ data, totalAmount, months }) {
   }, [amount]);
 
   useEffect(() => {
-    getTasksData(selectingTab.month, selectingTab.year);
+    if (selectingTab.month && selectingTab.year) {
+      getTasksData(selectingTab.month, selectingTab.year);
+    }
   }, [selectingTab]);
 
   return (
@@ -135,25 +145,45 @@ export default function Tasks({ data, totalAmount, months }) {
         </div>
       </div>
       <h3 className="font-bold my-4">Tasks Manager</h3>
-      <div role="tablist" className="tabs tabs-bordered">
-        {months.map((m, idx) => (
-          <a
-            role="tab"
-            className={`tab ${
-              `${selectingTab.month}/${selectingTab.year}` ===
-              `${m.month}/${m.year}`
-                ? "tab-active"
-                : ""
-            }`}
-            key={idx}
-            onClick={() => handleChangeTab(m)}
-          >
-            {`${m.month}/${m.year}`}
-          </a>
-        ))}
+      <label className="input input-bordered flex items-center gap-2">
+        <input type="text" className="grow" placeholder="Search Project" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          className="w-4 h-4 opacity-70"
+        >
+          <path
+            fillRule="evenodd"
+            d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </label>
+      <div className="overflow-x-auto">
+        <div role="tablist" className="tabs tabs-boxed flex">
+          {months.map((m, idx) => (
+            <a
+              role="tab"
+              className={`tab ${
+                `${selectingTab.month}/${selectingTab.year}` ===
+                `${m.month}/${m.year}`
+                  ? "tab-active"
+                  : ""
+              }`}
+              key={idx}
+              onClick={() => handleChangeTab(m)}
+            >
+              {`${m.month}/${m.year}`}
+            </a>
+          ))}
+        </div>
       </div>
+
       {isLoading ? (
-        <div>Loading</div>
+        <div className="text-center">
+          <span className="loading loading-infinity loading-lg text-success"></span>
+        </div>
       ) : (
         <>
           <div className="overflow-x-auto">
@@ -162,6 +192,7 @@ export default function Tasks({ data, totalAmount, months }) {
               <thead>
                 <tr>
                   <th></th>
+                  <th>Project name</th>
                   <th>Date</th>
                   <th>Hours</th>
                   <th>Rate</th>
@@ -175,22 +206,31 @@ export default function Tasks({ data, totalAmount, months }) {
                 {tasks?.map((d, idx) => (
                   <tr key={d.id}>
                     <th>{idx + 1}</th>
+                    <th>{d.project}</th>
                     <td>{format(new Date(d.date), "dd/MM/yyyy")}</td>
-                    <td>{d.hours}</td>
+                    <td>
+                      <div className="badge badge-secondary badge-outline">
+                        {d.hours}
+                      </div>
+                    </td>
                     <td>{d.rate}</td>
                     <td>{d.isPaid ? "Paid" : "Unpaid"}</td>
-                    <td>{d.hours * d.rate}</td>
+                    <td>
+                      <div className="badge badge-ghost">
+                        {d.hours * d.rate}
+                      </div>
+                    </td>
                     <td>{d.description}</td>
                     <td>
                       <div className="flex gap-2">
                         <button
-                          className="btn btn-primary btn-sm"
+                          className="btn btn-primary btn-outline btn-sm"
                           onClick={() => showUpdateModal(d)}
                         >
                           <MdOutlineEdit />
                         </button>
                         <button
-                          className="btn btn-error btn-sm"
+                          className="btn btn-sm btn-outline btn-error"
                           onClick={() => deleteOne(d._id)}
                         >
                           <MdDeleteOutline />
@@ -203,7 +243,7 @@ export default function Tasks({ data, totalAmount, months }) {
             </table>
           </div>
           <div className="fixed bg-green-500 left-0 bottom-0 w-full">
-            <div className="container mx-auto py-4">
+            <div className="container mx-auto p-4">
               <div className="flex justify-end gap-2 text-2xl items-center">
                 <b>Total: </b>
                 {tasks?.reduce((acc, item) => {
@@ -236,13 +276,14 @@ export default function Tasks({ data, totalAmount, months }) {
 
 export async function getServerSideProps(ctx) {
   const res = await axiosClient.get(
-    `/api/tasks?month=${ctx.query.month}&year=${ctx.query.year}`
+    `/api/tasks?month=${ctx.query.month || thisMonth}&year=${
+      ctx.query.year || thisYear
+    }`
   );
   const amount = res.data?.reduce((acc, item) => {
     return (acc += item.hours * item.rate);
   }, 0);
   const months = await getMonths();
-
   return {
     props: { data: res.data, totalAmount: amount, months: months.data },
   };
