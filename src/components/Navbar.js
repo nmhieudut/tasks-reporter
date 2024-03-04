@@ -1,11 +1,10 @@
 import { getMonth, getYear } from "date-fns";
 import Link from "next/link";
-import React from "react";
 
+const today = new Date();
+const month = getMonth(today) + 1;
+const year = getYear(today);
 export default function Navbar() {
-  const today = new Date();
-  const month = getMonth(today) + 1;
-  const year = getYear(today);
   return (
     <div className="container mx-auto navbar bg-base-100">
       <div className="navbar-start">
