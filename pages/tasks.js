@@ -22,10 +22,9 @@ const thisYear = getYear(today);
 
 const initialValue = {
   project: "Susu",
-  date: format(new Date(), "yyyy-MM-dd"),
-  hours: 0,
+  from: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+  to: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
   rate: 8,
-  isPaid: false,
   description: "",
 };
 
@@ -52,7 +51,7 @@ export default function Tasks({ data, totalAmount, months }) {
       year: m.year,
     });
   };
-
+  console.log({ createBody });
   const handleChangeForm = (e) => {
     setCreateBody({
       ...createBody,
@@ -108,8 +107,8 @@ export default function Tasks({ data, totalAmount, months }) {
   const updateOne = async () => {
     await updateTask(updateBody._id, {
       project: updateBody.project,
-      date: updateBody.date,
-      hours: updateBody.hours,
+      from: updateBody.from,
+      to: updateBody.to,
       rate: updateBody.rate,
       description: updateBody.description,
     });
@@ -121,7 +120,9 @@ export default function Tasks({ data, totalAmount, months }) {
     const currency = await getCurrencyRate();
     let fromRate = currency.rates["USD"];
     let toRate = currency.rates["VND"];
-    setConvertedAmount(numeral((toRate / fromRate) * amount).format("0,00.00"));
+    setConvertedAmount(
+      numeral(Math.round((toRate / fromRate) * amount)).format(0, 0, 0)
+    );
   };
 
   useEffect(() => {
@@ -146,7 +147,12 @@ export default function Tasks({ data, totalAmount, months }) {
       </div>
       <h3 className="font-bold my-4">Tasks Manager</h3>
       <label className="input input-bordered flex items-center gap-2">
-        <input type="text" className="grow" placeholder="Search Project" />
+        <input
+          type="text"
+          className="grow"
+          placeholder="Search Project - Not work now"
+          disabled
+        />
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 16 16"
@@ -193,8 +199,9 @@ export default function Tasks({ data, totalAmount, months }) {
                 <tr>
                   <th></th>
                   <th>Project name</th>
-                  <th>Date</th>
-                  <th>Hours</th>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Duration</th>
                   <th>Rate</th>
                   <th>Paid?</th>
                   <th>Amount</th>
@@ -207,12 +214,9 @@ export default function Tasks({ data, totalAmount, months }) {
                   <tr key={d.id}>
                     <th>{idx + 1}</th>
                     <th>{d.project}</th>
-                    <td>{format(new Date(d.date), "dd/MM/yyyy")}</td>
-                    <td>
-                      <div className="badge badge-secondary badge-outline">
-                        {d.hours}
-                      </div>
-                    </td>
+                    <td>{format(new Date(d.from), "dd/MM/yyyy HH:mm")}</td>
+                    <td>{format(new Date(d.to), "dd/MM/yyyy HH:mm")} </td>
+                    <td>{d.hours}</td>
                     <td>{d.rate}</td>
                     <td>{d.isPaid ? "Paid" : "Unpaid"}</td>
                     <td>

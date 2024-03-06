@@ -1,7 +1,12 @@
-import React from "react";
+import { intervalToDuration } from "date-fns";
 
 export default function CreateTaskModal({ data, handleChangeForm, onCreate }) {
-  const { project, date, hours, rate, description } = data;
+  const { project, from, to, rate, description } = data;
+  const duration = intervalToDuration({
+    start: new Date(from),
+    end: new Date(to),
+  });
+
   return (
     <dialog id="my_modal_3" className="modal">
       <div className="modal-box">
@@ -26,27 +31,34 @@ export default function CreateTaskModal({ data, handleChangeForm, onCreate }) {
           </label>
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Date</span>
+              <span className="label-text">From</span>
             </div>
             <input
-              name="date"
-              value={date}
+              name="from"
+              value={from}
               onChange={handleChangeForm}
-              type="date"
+              type="datetime-local"
             />
           </label>
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Hours?</span>
+              <span className="label-text">To</span>
             </div>
             <input
-              name="hours"
-              value={hours}
+              name="to"
+              value={to}
               onChange={handleChangeForm}
-              type="number"
-              max={24}
-              min={0}
-              placeholder="Type hours"
+              type="datetime-local"
+            />
+          </label>
+          <label className="form-control w-full max-w-xs">
+            <div className="label">
+              <span className="label-text">Duration</span>
+            </div>
+            <input
+              disabled
+              value={`${duration.hours}:${duration.minutes}`}
+              type="text"
               className="input input-bordered w-full max-w-xs"
             />
           </label>

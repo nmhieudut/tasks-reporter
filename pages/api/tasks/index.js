@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
-import { format, getMonth, getYear } from "date-fns";
+import { differenceInMinutes, getMonth, getYear } from "date-fns";
 import clientPromise from "lib/mongo";
 
 export default async function handler(req, res) {
@@ -9,6 +9,12 @@ export default async function handler(req, res) {
 
   switch (req.method) {
     case "POST":
+      const diff = differenceInMinutes(
+        new Date(req.body.to),
+        new Date(req.body.from)
+      );
+      const durationInDecimalHours = diff / 60;
+      req.body.hours = Math.round(durationInDecimalHours * 10) / 10;
       const myPost = await db.collection("tasks").insertOne(req.body);
       res.json(myPost);
       break;
@@ -18,7 +24,7 @@ export default async function handler(req, res) {
       const allTasks = await db.collection("tasks").find({}).toArray();
 
       const filteredData = allTasks.filter((item) => {
-        const date = new Date(item.date);
+        const date = new Date(item.from);
         return (
           getMonth(date).toString() === (month - 1).toString() &&
           getYear(date).toString() === year.toString()

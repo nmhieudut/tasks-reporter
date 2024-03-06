@@ -2,6 +2,7 @@
 
 import { getMonth, getYear } from "date-fns";
 import clientPromise from "lib/mongo";
+import * as _ from "lodash";
 
 export default async function handler(req, res) {
   const client = await clientPromise;
@@ -9,13 +10,27 @@ export default async function handler(req, res) {
   switch (req.method) {
     case "GET":
       const allTasks = await db.collection("tasks").find({}).toArray();
-      const months = allTasks
-        .map((t) => ({
-          month: getMonth(new Date(t.date)) + 1,
-          year: getYear(new Date(t.date)),
-        }))
-        .sort((a, b) => a.month - b.month);
-      res.json({ status: 200, data: months });
+      const months = [];
+      console.log({ allTasks });
+      allTasks
+        .forEach((t) => {
+          const taskMonth = getMonth(new Date(t.from)) + 1;
+          const taskYear = getYear(new Date(t.from));
+          const found = months.find(
+            (m) => m.month === taskMonth && m.year === taskYear
+          );
+          if (!found) {
+            months.push({
+              month: taskMonth,
+              year: taskYear,
+            });
+          }
+        })
+        ?.sort((a, b) => a.month - b.month);
+      res.json({
+        status: 200,
+        data: months,
+      });
       break;
   }
 }
