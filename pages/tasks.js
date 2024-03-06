@@ -51,7 +51,7 @@ export default function Tasks({ data, totalAmount, months }) {
       year: m.year,
     });
   };
-  console.log({ createBody });
+
   const handleChangeForm = (e) => {
     setCreateBody({
       ...createBody,

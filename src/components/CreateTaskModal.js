@@ -1,4 +1,4 @@
-import { intervalToDuration } from "date-fns";
+import { format, intervalToDuration } from "date-fns";
 
 export default function CreateTaskModal({ data, handleChangeForm, onCreate }) {
   const { project, from, to, rate, description } = data;
@@ -6,7 +6,14 @@ export default function CreateTaskModal({ data, handleChangeForm, onCreate }) {
     start: new Date(from),
     end: new Date(to),
   });
+  const [hours, minutes] = `${duration.hours}:${duration.minutes}`
+    .split(":")
+    .map((num) => parseInt(num));
 
+  const formattedDuration = format(
+    new Date().setHours(hours, minutes),
+    "HH:mm"
+  );
   return (
     <dialog id="my_modal_3" className="modal">
       <div className="modal-box">
@@ -57,7 +64,7 @@ export default function CreateTaskModal({ data, handleChangeForm, onCreate }) {
             </div>
             <input
               disabled
-              value={`${duration.hours}:${duration.minutes}`}
+              value={formattedDuration}
               type="text"
               className="input input-bordered w-full max-w-xs"
             />

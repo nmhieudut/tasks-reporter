@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     case "GET":
       const allTasks = await db.collection("tasks").find({}).toArray();
       const months = [];
-      console.log({ allTasks });
+
       allTasks
         .forEach((t) => {
           const taskMonth = getMonth(new Date(t.from)) + 1;
