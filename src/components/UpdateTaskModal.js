@@ -21,15 +21,15 @@ export default function UpdateTaskModal({ data, handleChangeForm, onCreate }) {
     "HH:mm"
   );
   return (
-    <dialog id="my_modal_4" className="modal">
+    <dialog id="my_modal_4" className="modal modal-bottom sm:modal-middle">
       <div className="modal-box">
         <form method="dialog">
           <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
             ✕
           </button>
         </form>
-        <h3 className="font-bold text-lg">Create new report!</h3>
-        <div className="flex flex-col gap-4 my-4">
+        <h3 className="font-bold text-lg text-center">Update report!</h3>
+        <div className="flex flex-col gap-4 my-4 items-center">
           <label className="form-control w-full max-w-xs">
             <div className="label">
               <span className="label-text">Project name?</span>
@@ -103,9 +103,11 @@ export default function UpdateTaskModal({ data, handleChangeForm, onCreate }) {
             />
           </label>
         </div>
-        <button className="btn btn-warning" onClick={onCreate}>
-          Update
-        </button>
+        <div className="text-center">
+          <button className="btn btn-warning" onClick={onCreate}>
+            Update
+          </button>
+        </div>
       </div>
     </dialog>
   );

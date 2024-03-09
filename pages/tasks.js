@@ -15,7 +15,8 @@ import {
   updateTask,
   getMonths,
 } from "src/services/tasks";
-
+import { FaPlus } from "react-icons/fa6";
+import { SlRefresh } from "react-icons/sl";
 const today = new Date();
 const thisMonth = getMonth(today) + 1;
 const thisYear = getYear(today);
@@ -139,13 +140,13 @@ export default function Tasks({ data, totalAmount, months }) {
     <div className="flex flex-col gap-4">
       <div className="flex gap-2 justify-end w-full">
         <div className="btn btn-primary" onClick={showCreateModal}>
-          Create
+          <FaPlus size={16} />
         </div>
-        <div className="btn btn-secondary" onClick={refreshData}>
-          Refresh
+        <div className="btn btn-outline btn-primary" onClick={refreshData}>
+          <SlRefresh size={16} />
         </div>
       </div>
-      <h3 className="font-bold my-4">Tasks Manager</h3>
+      <h3 className="font-bold my-2">Reports</h3>
       <label className="input input-bordered flex items-center gap-2">
         <input
           type="text"
@@ -204,8 +205,8 @@ export default function Tasks({ data, totalAmount, months }) {
                   <th>Duration</th>
                   <th>Rate</th>
                   <th>Paid?</th>
-                  <th>Amount</th>
                   <th>Description / Task Name</th>
+                  <th>Amount</th>
                   <th>Manage</th>
                 </tr>
               </thead>
@@ -219,12 +220,12 @@ export default function Tasks({ data, totalAmount, months }) {
                     <td>{d.hours}</td>
                     <td>{d.rate}</td>
                     <td>{d.isPaid ? "Paid" : "Unpaid"}</td>
+                    <td>{d.description}</td>
                     <td>
-                      <div className="badge badge-ghost">
+                      <div className="badge badge-secondary badge-outline">
                         {d.hours * d.rate}
                       </div>
                     </td>
-                    <td>{d.description}</td>
                     <td>
                       <div className="flex gap-2">
                         <button
