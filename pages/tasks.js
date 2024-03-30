@@ -46,6 +46,8 @@ export default function Tasks({ data, totalAmount, months }) {
     year,
   });
 
+  const [isVND, setIsVND] = useState(false);
+
   const handleChangeTab = (m) => {
     setSelectingTab({
       month: m.month,
@@ -139,10 +141,13 @@ export default function Tasks({ data, totalAmount, months }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-2 justify-end w-full">
-        <div className="btn btn-primary" onClick={showCreateModal}>
+        <div className="btn btn-primary btn-sm" onClick={showCreateModal}>
           <FaPlus size={16} />
         </div>
-        <div className="btn btn-outline btn-primary" onClick={refreshData}>
+        <div
+          className="btn btn-outline btn-primary btn-sm"
+          onClick={refreshData}
+        >
           <SlRefresh size={16} />
         </div>
       </div>
@@ -193,8 +198,8 @@ export default function Tasks({ data, totalAmount, months }) {
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto">
-            <table className="table table-xs table-pin-rows">
+          <div className="overflow-x-auto max-h-[40vh]">
+            <table className="table table-xs table-pin-rows ">
               {/* head */}
               <thead>
                 <tr>
@@ -222,7 +227,7 @@ export default function Tasks({ data, totalAmount, months }) {
                     <td>{d.isPaid ? "Paid" : "Unpaid"}</td>
                     <td>{d.description}</td>
                     <td>
-                      <div className="badge badge-secondary badge-outline">
+                      <div className="badge badge-secondary">
                         {d.hours * d.rate}
                       </div>
                     </td>
@@ -247,18 +252,34 @@ export default function Tasks({ data, totalAmount, months }) {
               </tbody>
             </table>
           </div>
-          <div className="fixed bg-green-500 left-0 bottom-0 w-full">
-            <div className="container mx-auto p-4">
-              <div className="flex justify-end gap-2 text-2xl items-center">
+          <div className="text-right w-full">
+            <div className="p-2 flex flex-col gap-4">
+              <div className="flex items-center justify-end gap-2">
                 <b>Total: </b>
-                {tasks?.reduce((acc, item) => {
-                  return (acc += item.hours * item.rate);
-                }, 0)}{" "}
-                <strong>USD</strong>
+                <span>VND</span>
+                <input
+                  type="checkbox"
+                  className="toggle toggle-secondary"
+                  checked={isVND}
+                  onChange={() => setIsVND(!isVND)}
+                />
+                <span>USD</span>
               </div>
-
-              <div className="flex justify-end gap-4 text-xl">
-                = {convertedAmount} <strong>VND</strong>
+              <div>
+                ={" "}
+                {isVND ? (
+                  <>
+                    {" "}
+                    {tasks?.reduce((acc, item) => {
+                      return (acc += item.hours * item.rate);
+                    }, 0)}{" "}
+                    <strong>USD</strong>
+                  </>
+                ) : (
+                  <>
+                    {convertedAmount} <strong>VND</strong>
+                  </>
+                )}
               </div>
             </div>
           </div>
